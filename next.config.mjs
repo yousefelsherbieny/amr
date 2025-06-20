@@ -9,6 +9,7 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
+  reactStrictMode: true, // تفعيل Strict mode لتحسين الكشف عن المشاكل
 }
 
-export default nextConfig
+export default nextConfig;

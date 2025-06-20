@@ -1,13 +1,31 @@
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Badge } from "@/components/ui/badge"
-import { Search, Filter, Download, Mail, Phone, Calendar, Clock, BookOpen } from "lucide-react"
+"use client";
+import { useRouter } from "next/navigation"
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import {
+  Search,
+  Filter,
+  Download,
+  Mail,
+  Phone,
+  Calendar,
+  Clock,
+  BookOpen,
+} from "lucide-react";
 
 export default function StudentsPage() {
-  // Sample student data
+  const router = useRouter();
+
   const students = [
     {
       id: 1,
@@ -69,14 +87,24 @@ export default function StudentsPage() {
       phone: "+1 (555) 234-5678",
       subjects: ["Operating System", " Data Structure", "Logic Design"],
     },
-  ]
+  ];
+
+const handleViewProfile = (id: number) => {
+  console.log("Navigating to:", `/teacher/students/${id}`)
+  router.push(`/teacher/students/${id}`)
+}
+
+
+
 
   return (
     <div className="container mx-auto py-6 space-y-6">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">My Students</h1>
-          <p className="text-muted-foreground">View and manage your students' information and performance</p>
+          <p className="text-muted-foreground">
+            View and manage your students' information and performance
+          </p>
         </div>
         <div className="flex gap-2">
           <Button variant="outline" size="sm">
@@ -93,7 +121,11 @@ export default function StudentsPage() {
       <div className="flex items-center gap-4">
         <div className="relative flex-1">
           <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-          <Input type="search" placeholder="Search students..." className="w-full pl-8 bg-background" />
+          <Input
+            type="search"
+            placeholder="Search students..."
+            className="w-full pl-8 bg-background"
+          />
         </div>
       </div>
 
@@ -112,11 +144,18 @@ export default function StudentsPage() {
                   <div className="flex justify-between items-start">
                     <div className="flex items-center gap-3">
                       <Avatar className="h-10 w-10">
-                        <AvatarImage src={student.avatar || "/placeholder.svg"} alt={student.name} />
-                        <AvatarFallback>{student.name.charAt(0)}</AvatarFallback>
+                        <AvatarImage
+                          src={student.avatar || "/placeholder.svg"}
+                          alt={student.name}
+                        />
+                        <AvatarFallback>
+                          {student.name.charAt(0)}
+                        </AvatarFallback>
                       </Avatar>
                       <div>
-                        <CardTitle className="text-lg">{student.name}</CardTitle>
+                        <CardTitle className="text-lg">
+                          {student.name}
+                        </CardTitle>
                         <CardDescription>{student.grade}</CardDescription>
                       </div>
                     </div>
@@ -125,10 +164,10 @@ export default function StudentsPage() {
                         student.performance === "Excellent"
                           ? "default"
                           : student.performance === "Good"
-                            ? "secondary"
-                            : student.performance === "Average"
-                              ? "outline"
-                              : "destructive"
+                          ? "secondary"
+                          : student.performance === "Average"
+                          ? "outline"
+                          : "destructive"
                       }
                     >
                       {student.performance}
@@ -147,7 +186,6 @@ export default function StudentsPage() {
                         <span>Active: {student.lastActive}</span>
                       </div>
                     </div>
-
                     <div className="space-y-1">
                       <div className="flex items-center gap-2 text-sm">
                         <Mail className="h-4 w-4 text-muted-foreground" />
@@ -158,7 +196,6 @@ export default function StudentsPage() {
                         <span>{student.phone}</span>
                       </div>
                     </div>
-
                     <div className="space-y-1">
                       <div className="flex items-center gap-2 text-sm">
                         <BookOpen className="h-4 w-4 text-muted-foreground" />
@@ -166,7 +203,11 @@ export default function StudentsPage() {
                       </div>
                       <div className="flex flex-wrap gap-1">
                         {student.subjects.map((subject) => (
-                          <Badge key={subject} variant="outline" className="text-xs">
+                          <Badge
+                            key={subject}
+                            variant="outline"
+                            className="text-xs"
+                          >
                             {subject}
                           </Badge>
                         ))}
@@ -175,7 +216,11 @@ export default function StudentsPage() {
                   </div>
                 </CardContent>
                 <div className="flex border-t divide-x">
-                  <Button variant="ghost" className="flex-1 rounded-none h-10">
+                  <Button
+                    variant="ghost"
+                    className="flex-1 rounded-none h-10"
+                    onClick={() => handleViewProfile(student.id)}
+                  >
                     View Profile
                   </Button>
                   <Button variant="ghost" className="flex-1 rounded-none h-10">
@@ -191,7 +236,9 @@ export default function StudentsPage() {
           <Card>
             <CardHeader>
               <CardTitle>Active Students</CardTitle>
-              <CardDescription>Students who have been active in the last 7 days</CardDescription>
+              <CardDescription>
+                Students who have been active in the last 7 days
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <p>Content for active students tab</p>
@@ -203,7 +250,9 @@ export default function StudentsPage() {
           <Card>
             <CardHeader>
               <CardTitle>Inactive Students</CardTitle>
-              <CardDescription>Students who have not been active for more than 7 days</CardDescription>
+              <CardDescription>
+                Students who have not been active for more than 7 days
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <p>Content for inactive students tab</p>
@@ -212,5 +261,5 @@ export default function StudentsPage() {
         </TabsContent>
       </Tabs>
     </div>
-  )
+  );
 }
