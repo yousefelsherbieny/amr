@@ -1,5 +1,5 @@
 "use client";
-import { useRouter } from "next/navigation"
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -89,13 +89,10 @@ export default function StudentsPage() {
     },
   ];
 
-const handleViewProfile = (id: number) => {
-  console.log("Navigating to:", `/teacher/students/${id}`)
-  router.push(`/teacher/students/${id}`)
-}
-
-
-
+  const handleViewProfile = (id: number) => {
+    console.log("Navigating to:", `/teacher/students/${id}`);
+    router.push(`/teacher/students/${id}`);
+  };
 
   return (
     <div className="container mx-auto py-6 space-y-6">
@@ -223,7 +220,17 @@ const handleViewProfile = (id: number) => {
                   >
                     View Profile
                   </Button>
-                  <Button variant="ghost" className="flex-1 rounded-none h-10">
+                  <Button
+                    variant="ghost"
+                    className="flex-1 rounded-none h-10"
+                    onClick={() =>
+                      router.push(
+                        `/teacher/chat/${student.id}?name=${encodeURIComponent(
+                          student.name
+                        )}`
+                      )
+                    }
+                  >
                     Contact
                   </Button>
                 </div>

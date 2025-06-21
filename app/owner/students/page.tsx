@@ -1,3 +1,6 @@
+"use client";
+
+import { useState } from "react";
 import {
   Search,
   Filter,
@@ -9,23 +12,37 @@ import {
   Mail,
   Phone,
   MapPin,
-} from "lucide-react"
+} from "lucide-react";
 
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { Badge } from "@/components/ui/badge"
+} from "@/components/ui/dropdown-menu";
+import { Badge } from "@/components/ui/badge";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+  DialogClose,
+} from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
 
-// Mock data for students
 const students = [
   {
     id: "STU001",
@@ -67,69 +84,81 @@ const students = [
       lastPayment: "2024-08-05",
     },
   },
-  {
-    id: "STU003",
-    name: "Michael Brown",
-    grade: "9th Grade",
-    section: "is",
-    rollNo: "903",
-    gender: "Male",
-    attendance: "95%",
-    performance: "Outstanding",
-    contact: "michael.b@example.com",
-    phone: "+1 234-567-8903",
-    address: "789 Learning Blvd, Schooltown",
-    status: "active",
-    joinDate: "2022-08-12",
-    parentName: "James Brown",
-    fees: {
-      status: "paid",
-      lastPayment: "2024-09-10",
-    },
-  },
-  {
-    id: "STU004",
-    name: "Emily Davis",
-    grade: "12th Grade",
-    section: "it",
-    rollNo: "1204",
-    gender: "Female",
-    attendance: "90%",
-    performance: "Very Good",
-    contact: "emily.d@example.com",
-    phone: "+1 234-567-8904",
-    address: "101 Knowledge St, Eduville",
-    status: "active",
-    joinDate: "2020-08-05",
-    parentName: "Sarah Davis",
-    fees: {
-      status: "overdue",
-      lastPayment: "2025-07-05",
-    },
-  },
-  {
-    id: "STU005",
-    name: "Daniel Wilson",
-    grade: "10th Grade",
-    section: "cs",
-    rollNo: "1005",
-    gender: "Male",
-    attendance: "85%",
-    performance: "Good",
-    contact: "daniel.w@example.com",
-    phone: "+1 234-567-8905",
-    address: "202 Academy Road, Learnington",
-    status: "inactive",
-    joinDate: "2022-08-15",
-    parentName: "Thomas Wilson",
-    fees: {
-      status: "paid",
-      lastPayment: "2024-09-01",
-    },
-  },
-]
+];
+
 
 export default function StudentsPage() {
+  const [isOpen, setIsOpen] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [selectedStudentId, setSelectedStudentId] = useState(null);
+  const [newStudent, setNewStudent] = useState({
+    name: "",
+    grade: "",
+    section: "",
+    rollNo: "",
+    performance: "",
+    contact: "",
+    phone: "",
+    address: "",
+  });
+  const [studentList, setStudentList] = useState(students);
+
+  const openEditModal = (student) => {
+    setNewStudent({
+      name: student.name,
+      grade: student.grade,
+      section: student.section,
+      rollNo: student.rollNo,
+      performance: student.performance,
+      contact: student.contact,
+      phone: student.phone,
+      address: student.address,
+    });
+    setSelectedStudentId(student.id);
+    setIsEditing(true);
+    setIsOpen(true);
+  };
+
+  const saveStudent = () => {
+    const newEntry = {
+      id: `STU${Math.floor(Math.random() * 10000)}`,
+      ...newStudent,
+      gender: "Not set",
+      attendance: "0%",
+      status: "active",
+      joinDate: new Date().toISOString().split("T")[0],
+      parentName: "Not set",
+      fees: { status: "pending", lastPayment: "-" },
+    };
+    setStudentList([...studentList, newEntry]);
+    setIsOpen(false);
+    resetForm();
+  };
+
+  const updateStudent = () => {
+    const updatedList = studentList.map((s) =>
+      s.id === selectedStudentId ? { ...s, ...newStudent } : s
+    );
+    setStudentList(updatedList);
+    setIsOpen(false);
+    setIsEditing(false);
+    resetForm();
+  };
+
+  const resetForm = () => {
+    setNewStudent({
+      name: "",
+      grade: "",
+      section: "",
+      rollNo: "",
+      performance: "",
+      contact: "",
+      phone: "",
+      address: "",
+    });
+    setSelectedStudentId(null);
+  };
+
   return (
     <div className="container mx-auto p-4 space-y-6">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
@@ -142,7 +171,7 @@ export default function StudentsPage() {
             <Download className="mr-2 h-4 w-4" />
             Export
           </Button>
-          <Button>
+          <Button onClick={() => { setIsEditing(false); setIsOpen(true); }}>
             <Plus className="mr-2 h-4 w-4" />
             Add Student
           </Button>
@@ -150,43 +179,9 @@ export default function StudentsPage() {
       </div>
 
       <Tabs defaultValue="all" className="w-full">
-        <div className="flex flex-col md:flex-row justify-between gap-4 mb-4">
-          <TabsList className="mb-2 md:mb-0">
-            <TabsTrigger value="all">All Students</TabsTrigger>
-            <TabsTrigger value="active">Active</TabsTrigger>
-            <TabsTrigger value="inactive">Inactive</TabsTrigger>
-            <TabsTrigger value="new">New Admissions</TabsTrigger>
-          </TabsList>
-          <div className="flex flex-col sm:flex-row gap-2">
-            <div className="relative">
-              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-              <Input type="search" placeholder="Search students..." className="w-full sm:w-[250px] pl-8" />
-            </div>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" className="ml-auto">
-                  <Filter className="mr-2 h-4 w-4" />
-                  Filter
-                  <ChevronDown className="ml-2 h-4 w-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-[200px]">
-                <DropdownMenuLabel>Filter by</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem>Grade</DropdownMenuItem>
-                <DropdownMenuItem>Section</DropdownMenuItem>
-                <DropdownMenuItem>Performance</DropdownMenuItem>
-                <DropdownMenuItem>Fee Status</DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem>Clear Filters</DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
-        </div>
-
         <TabsContent value="all" className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {students.map((student) => (
+            {studentList.map((student) => (
               <Card key={student.id} className="overflow-hidden">
                 <CardHeader className="pb-2">
                   <div className="flex justify-between items-start">
@@ -200,16 +195,35 @@ export default function StudentsPage() {
                       <DropdownMenuTrigger asChild>
                         <Button variant="ghost" size="icon">
                           <MoreHorizontal className="h-4 w-4" />
-                          <span className="sr-only">More options</span>
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
-                        <DropdownMenuItem>View Profile</DropdownMenuItem>
-                        <DropdownMenuItem>Edit Details</DropdownMenuItem>
-                        <DropdownMenuItem>Academic Records</DropdownMenuItem>
-                        <DropdownMenuItem>Attendance History</DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => openEditModal(student)}>Edit Details</DropdownMenuItem>
+
+                        <DropdownMenuItem onClick={() => {
+                          const updated = studentList.map((s) =>
+                            s.id === student.id ? { ...s, status: "inactive" } : s
+                          );
+                          setStudentList(updated);
+                        }}>Deactivate</DropdownMenuItem>
+
+                        <DropdownMenuItem onClick={() => {
+                          const updated = studentList.map((s) =>
+                            s.id === student.id
+                              ? { ...s, status: s.status === "active" ? "inactive" : "active" }
+                              : s
+                          );
+                          setStudentList(updated);
+                        }}>{student.status === "active" ? "Mark Inactive" : "Mark Active"}</DropdownMenuItem>
+
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem className="text-red-600">Deactivate</DropdownMenuItem>
+
+                        <DropdownMenuItem className="text-red-600" onClick={() => {
+                          if (confirm(`Are you sure you want to delete ${student.name}?`)) {
+                            const updated = studentList.filter((s) => s.id !== student.id);
+                            setStudentList(updated);
+                          }
+                        }}>Delete</DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </div>
@@ -235,87 +249,49 @@ export default function StudentsPage() {
                   </div>
                 </CardContent>
                 <CardFooter className="flex justify-between pt-2">
-                  <div>
-                    <Badge variant={student.status === "active" ? "default" : "secondary"}>
-                      {student.status.charAt(0).toUpperCase() + student.status.slice(1)}
-                    </Badge>
-                  </div>
-                  <div>
-                    <Badge
-                      variant={
-                        student.fees.status === "paid"
-                          ? "default"
-                          : student.fees.status === "pending"
-                            ? "outline"
-                            : "destructive"
-                      }
-                    >
-                      Fees: {student.fees.status.charAt(0).toUpperCase() + student.fees.status.slice(1)}
-                    </Badge>
-                  </div>
+                  <Badge variant={student.status === "active" ? "default" : "secondary"}>
+                    {student.status.charAt(0).toUpperCase() + student.status.slice(1)}
+                  </Badge>
+                  <Badge variant={
+                    student.fees?.status === "paid" ? "default" :
+                    student.fees?.status === "pending" ? "outline" : "destructive"
+                  }>
+                    Fees: {student.fees?.status?.charAt(0).toUpperCase() + student.fees?.status?.slice(1)}
+                  </Badge>
                 </CardFooter>
               </Card>
             ))}
           </div>
-          <div className="flex items-center justify-between">
-            <div className="text-sm text-muted-foreground">
-              Showing <strong>5</strong> of <strong>100</strong> students
-            </div>
-            <div className="flex items-center space-x-2">
-              <Button variant="outline" size="sm" disabled>
-                Previous
-              </Button>
-              <Button variant="outline" size="sm">
-                Next
-              </Button>
-            </div>
-          </div>
-        </TabsContent>
-
-        <TabsContent value="active">
-          <div className="p-8 text-center">
-            <h3 className="text-lg font-medium">Active Students</h3>
-            <p className="text-muted-foreground">Showing only currently active students.</p>
-          </div>
-        </TabsContent>
-
-        <TabsContent value="inactive">
-          <div className="p-8 text-center">
-            <h3 className="text-lg font-medium">Inactive Students</h3>
-            <p className="text-muted-foreground">Showing only inactive or alumni students.</p>
-          </div>
-        </TabsContent>
-
-        <TabsContent value="new">
-          <div className="p-8 text-center">
-            <h3 className="text-lg font-medium">New Admissions</h3>
-            <p className="text-muted-foreground">Showing only recently admitted students.</p>
-          </div>
         </TabsContent>
       </Tabs>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Student Analytics</CardTitle>
-          <CardDescription>Overview of student performance and demographics</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="bg-muted rounded-lg p-4">
-              <h3 className="font-medium mb-2">Grade Distribution</h3>
-              <div className="h-40 flex items-center justify-center text-muted-foreground">Chart placeholder</div>
-            </div>
-            <div className="bg-muted rounded-lg p-4">
-              <h3 className="font-medium mb-2">Performance Metrics</h3>
-              <div className="h-40 flex items-center justify-center text-muted-foreground">Chart placeholder</div>
-            </div>
-            <div className="bg-muted rounded-lg p-4">
-              <h3 className="font-medium mb-2">Attendance Overview</h3>
-              <div className="h-40 flex items-center justify-center text-muted-foreground">Chart placeholder</div>
-            </div>
+      {/* Modal for Add/Edit */}
+      <Dialog open={isOpen} onOpenChange={setIsOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{isEditing ? "Edit Student" : "Add New Student"}</DialogTitle>
+          </DialogHeader>
+          <div className="grid gap-4">
+            {["name", "grade", "section", "rollNo", "performance", "contact", "phone", "address"].map((field) => (
+              <div key={field}>
+                <Label className="capitalize">{field}</Label>
+                <Input
+                  value={newStudent[field]}
+                  onChange={(e) => setNewStudent({ ...newStudent, [field]: e.target.value })}
+                />
+              </div>
+            ))}
           </div>
-        </CardContent>
-      </Card>
+          <DialogFooter>
+            <DialogClose asChild>
+              <Button variant="ghost">Cancel</Button>
+            </DialogClose>
+            <Button onClick={isEditing ? updateStudent : saveStudent}>
+              {isEditing ? "Update" : "Save"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
-  )
+  );
 }
